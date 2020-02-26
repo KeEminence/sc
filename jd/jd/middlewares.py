@@ -6,6 +6,9 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+import random
+from jd.settings import IPPOOL
+from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
 
 
 class JdSpiderMiddleware(object):
@@ -101,3 +104,12 @@ class JdDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+class IPPOOLS(HttpProxyMiddleware):
+    def __init__(self,ip=''):
+        self.ip=ip
+
+    def process_request(self,request,spider):
+        thisip=random.choice(IPPOOL)
+        print('now  '+thisip['ipaddr'])
+        request.meta["proxy"]="http://"+thisip['ipaddr']
